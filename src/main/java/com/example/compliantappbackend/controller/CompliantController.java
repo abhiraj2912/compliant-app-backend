@@ -1,21 +1,24 @@
 package com.example.compliantappbackend.controller;
 
+import com.example.compliantappbackend.dao.CompliantDao;
 import com.example.compliantappbackend.dao.UserDao;
+import com.example.compliantappbackend.model.Compliant;
 import com.example.compliantappbackend.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class CompliantController {
 
     @Autowired
     private UserDao udao;
+
+    @Autowired
+    private CompliantDao cdao;
 
     @CrossOrigin(origins = "*")
     @PostMapping(path = "/adduser", produces = "application/json", consumes = "application/json" )
@@ -51,6 +54,26 @@ public class CompliantController {
     }
 
 
+    @CrossOrigin(origins = "*")
+    @PostMapping(path = "/addcompliant", consumes = "application/json", produces = "application/json")
+    public  HashMap<String,String> AddCompliant(@RequestBody Compliant c){
+        HashMap <String, String> map = new  HashMap<>();
+        cdao.save(c);
+        map.put("status","success");
+        return map;
+    }
 
+    @CrossOrigin(origins = "*")
+    @PostMapping(path = "/ucompliantview", consumes = "application/json", produces = "application/json")
+    public List<Compliant> userCompliant(@RequestBody Compliant c){
+        String uid = String.valueOf(c.getUserId());
+        System.out.println(uid);
+        return (List<Compliant>) cdao.UserView(c.getUserId());
+    }
 
+    @CrossOrigin(origins = "*")
+    @GetMapping("/acompliantview")
+    public List<Map<String,String>> adminCompliant(){
+        return (List<Map<String,String>>) cdao.AdminView();
+    }
 }
